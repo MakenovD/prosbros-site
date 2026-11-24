@@ -48,6 +48,7 @@ section{scroll-margin-top:70px;position:relative}
 .js .rv.d1{transition-delay:.08s}.js .rv.d2{transition-delay:.16s}.js .rv.d3{transition-delay:.24s}
 
 /* header */
+.refbar{background:var(--brand);color:#fff;text-align:center;font-weight:600;font-size:14.5px;line-height:1.45;padding:10px 18px}
 .hdr{position:sticky;top:0;z-index:40;background:rgba(13,17,23,.78);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid var(--ld)}
 .hdr .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:72px}
 .logo img{height:40px;width:auto}
@@ -646,6 +647,21 @@ def body(L):
 JS = r"""<script>window.SIGNUP_URL='https://script.google.com/macros/s/AKfycbztYv8yAHyx6XuHL0YxAkPHzfOkV-wTxPOzFWAAKcNIBzgt4GQ1XJ9VNIGehiwFCas/exec';</script>
 <script>
 (function(){
+// referral: ?ref=<code> is remembered on this device, shown as a banner for known partners, and sent with the signup
+var PARTNERS={eduard:{n:'Eduard',b:'HandyGurus, Los Angeles'}};
+var RT={en:'{n} ({b}) invited you. Partner bonus: a free audit of your Thumbtack inbox and your first month free at launch.',
+ru:'Вас пригласил {n} ({b}). Бонус от партнёра: бесплатный аудит вашего инбокса Thumbtack и первый месяц бесплатно на старте.',
+es:'{n} ({b}) te invitó. Bono de socio: auditoría gratis de tu bandeja de Thumbtack y tu primer mes gratis en el lanzamiento.',
+uk:'Вас запросив {n} ({b}). Бонус від партнера: безкоштовний аудит вашого інбоксу Thumbtack і перший місяць безкоштовно на старті.'};
+var ref=null;
+try{var m=location.search.match(/[?&]ref=([a-z0-9_-]{2,32})/i);if(m){ref=m[1].toLowerCase();try{localStorage.setItem('pb_ref',ref);}catch(e){}}else{try{ref=localStorage.getItem('pb_ref');}catch(e){}}}catch(e){}
+window.PB_REF=ref;
+if(ref){
+ try{posthog.register({ref:ref});}catch(e){}
+ document.querySelectorAll('.lang a').forEach(function(a){try{var u=new URL(a.getAttribute('href'),location.href);u.searchParams.set('ref',ref);a.setAttribute('href',u.pathname+u.search);}catch(e){}});
+ var P=PARTNERS[ref];
+ if(P){var lg=(document.documentElement.lang||'en').slice(0,2),bn=document.createElement('div');bn.className='refbar';bn.setAttribute('role','note');bn.textContent=(RT[lg]||RT.en).replace('{n}',P.n).replace('{b}',P.b);document.body.insertBefore(bn,document.body.firstChild);}
+}
 var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 var mq=window.matchMedia('(max-width:760px)');
 // reveal on scroll
@@ -688,7 +704,7 @@ document.querySelectorAll('.lang a').forEach(function(a){a.addEventListener('cli
 // waitlist
 var f=document.getElementById('waitlist');
 f.addEventListener('submit',function(e){e.preventDefault();var d={};new FormData(f).forEach(function(v,k){d[k]=v;});d.sms_opt_in=!!f.querySelector('#f-sms').checked;d.site_lang=document.documentElement.lang;
-var payload=new URLSearchParams();Object.keys(d).forEach(function(k){payload.append(k,d[k]);});payload.append('page',location.href);payload.append('referrer',document.referrer||'');
+var payload=new URLSearchParams();Object.keys(d).forEach(function(k){payload.append(k,d[k]);});payload.append('page',location.href);payload.append('referrer',(ref?'ref:'+ref+(document.referrer?' | ':''):'')+(document.referrer||''));if(ref){d.ref=ref;}
 if(window.SIGNUP_URL&&!d.website){try{fetch(window.SIGNUP_URL,{method:'POST',mode:'no-cors',body:payload,keepalive:true});}catch(err){}}
 if(d.website){return;}
 delete d.website;
