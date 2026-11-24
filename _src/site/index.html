@@ -128,10 +128,10 @@ posthog.init('phc_qAn2hvdsVW6jbmNr34Cai64jjH8Tg7cp7eCmxoNk42ak',{api_host:'https
 (function(){
 // referral: ?ref=<code> is remembered on this device, shown as a banner for known partners, and sent with the signup
 var PARTNERS={eduard:{n:'Eduard',b:'HandyGurus, Los Angeles'}};
-var RT={en:'{n} ({b}) invited you. Partner bonus: a free audit of your Thumbtack inbox and your first month free at launch.',
-ru:'Вас пригласил {n} ({b}). Бонус от партнёра: бесплатный аудит вашего инбокса Thumbtack и первый месяц бесплатно на старте.',
-es:'{n} ({b}) te invitó. Bono de socio: auditoría gratis de tu bandeja de Thumbtack y tu primer mes gratis en el lanzamiento.',
-uk:'Вас запросив {n} ({b}). Бонус від партнера: безкоштовний аудит вашого інбоксу Thumbtack і перший місяць безкоштовно на старті.'};
+var RT={en:'{n} ({b}) invited you: your first month of ProsBros is free.',
+ru:'Вас пригласил {n} ({b}): первый месяц ProsBros для вас бесплатно.',
+es:'{n} ({b}) te invitó: tu primer mes de ProsBros es gratis.',
+uk:'Вас запросив {n} ({b}): перший місяць ProsBros для вас безкоштовно.'};
 var ref=null;
 try{var m=location.search.match(/[?&]ref=([a-z0-9_-]{2,32})/i);if(m){ref=m[1].toLowerCase();try{localStorage.setItem('pb_ref',ref);}catch(e){}}else{try{ref=localStorage.getItem('pb_ref');}catch(e){}}}catch(e){}
 window.PB_REF=ref;
