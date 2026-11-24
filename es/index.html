@@ -111,6 +111,7 @@ posthog.init('phc_qAn2hvdsVW6jbmNr34Cai64jjH8Tg7cp7eCmxoNk42ak',{api_host:'https
 <div class="f"><label for="f-phone">Celular</label><input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel"></div></div>
 <div class="f"><label for="f-leads">Leads de Thumbtack al mes</label><select id="f-leads" name="leads_per_month"><option>Menos de 20</option><option>20–50</option><option>50–100</option><option>100+</option></select></div>
 <div class="chk"><input id="f-sms" name="sms_opt_in" type="checkbox"><label for="f-sms">Mándame textos (SMS) sobre mi revisión de leads. Pueden aplicar cargos por mensajes y datos. Responde STOP para cancelar. Opcional.</label></div>
+<input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
 <button type="submit">Checa mis leads — gratis</button>
 <p id="waitlist-ok" role="status">Ya estás en la lista. Pronto te mandamos tu link por email — tu compa te cubre.</p>
 </form></div></section>
@@ -122,6 +123,7 @@ posthog.init('phc_qAn2hvdsVW6jbmNr34Cai64jjH8Tg7cp7eCmxoNk42ak',{api_host:'https
 </div></footer>
 <div class="sticky" id="sticky" aria-hidden="true"><a class="btn btn-brand" href="#audit" tabindex="-1">Checa mis leads — gratis</a></div>
 <script id="demo-data" type="application/json">{"a": ["Mounting a 65\" TV is $149 with the bracket install. Hiding the cables in the wall is +$60. I can come Thu 4pm or Sat 10am — want me to lock one in?", "Saturday I've got 10am or 1pm open. What's the job and your ZIP? I'll confirm the price before I come out.", "My prices are fair and fixed — no surprise fees. If you bundle 2+ small jobs in one visit, I take $25 off. Want to add something?", "Yep — haul-away is $40 for small items, $90 for a full truck bed. I'll put it in the quote so you see the total upfront."], "q": ["How much to mount a 65\" TV?", "Are you free this Saturday?", "Can you do it cheaper?", "Do you haul away the old stuff?"], "you": "Cliente", "bro": "Bro · a tu nombre"}</script>
+<script>window.SIGNUP_URL='https://script.google.com/macros/s/AKfycbztYv8yAHyx6XuHL0YxAkPHzfOkV-wTxPOzFWAAKcNIBzgt4GQ1XJ9VNIGehiwFCas/exec';</script>
 <script>
 (function(){
 var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -166,6 +168,10 @@ document.querySelectorAll('.lang a').forEach(function(a){a.addEventListener('cli
 // waitlist
 var f=document.getElementById('waitlist');
 f.addEventListener('submit',function(e){e.preventDefault();var d={};new FormData(f).forEach(function(v,k){d[k]=v;});d.sms_opt_in=!!f.querySelector('#f-sms').checked;d.site_lang=document.documentElement.lang;
+var payload=new URLSearchParams();Object.keys(d).forEach(function(k){payload.append(k,d[k]);});payload.append('page',location.href);payload.append('referrer',document.referrer||'');
+if(window.SIGNUP_URL&&!d.website){try{fetch(window.SIGNUP_URL,{method:'POST',mode:'no-cors',body:payload,keepalive:true});}catch(err){}}
+if(d.website){return;}
+delete d.website;
 try{posthog.identify(d.email,{email:d.email,name:d.name,business:d.business,phone:d.phone,leads_per_month:d.leads_per_month,sms_opt_in:d.sms_opt_in,site_lang:d.site_lang});posthog.capture('waitlist_signup',d);}catch(err){}
 var b=f.querySelector('button[type=submit]');b.disabled=true;b.textContent=f.dataset.done;document.getElementById('waitlist-ok').style.display='block';});
 document.querySelectorAll('a[href="#audit"]').forEach(function(a){a.addEventListener('click',function(){try{posthog.capture('cta_click',{label:a.textContent.trim()});}catch(err){}});});

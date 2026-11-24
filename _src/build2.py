@@ -628,6 +628,7 @@ def body(L):
 <div class="f"><label for="f-phone">{L['f_phone']}</label><input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel"></div></div>
 <div class="f"><label for="f-leads">{L['f_leads']}</label><select id="f-leads" name="leads_per_month">{opts}</select></div>
 <div class="chk"><input id="f-sms" name="sms_opt_in" type="checkbox"><label for="f-sms">{L['f_sms']}</label></div>
+<input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
 <button type="submit">{L['f_btn']}</button>
 <p id="waitlist-ok" role="status">{L['f_ok']}</p>
 </form></div></section>
@@ -642,7 +643,8 @@ def body(L):
     o.append(f'<script id="demo-data" type="application/json">{demo_json}</script>')
     return '\n'.join(o)
 
-JS = r"""<script>
+JS = r"""<script>window.SIGNUP_URL='https://script.google.com/macros/s/AKfycbztYv8yAHyx6XuHL0YxAkPHzfOkV-wTxPOzFWAAKcNIBzgt4GQ1XJ9VNIGehiwFCas/exec';</script>
+<script>
 (function(){
 var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 var mq=window.matchMedia('(max-width:760px)');
@@ -686,6 +688,10 @@ document.querySelectorAll('.lang a').forEach(function(a){a.addEventListener('cli
 // waitlist
 var f=document.getElementById('waitlist');
 f.addEventListener('submit',function(e){e.preventDefault();var d={};new FormData(f).forEach(function(v,k){d[k]=v;});d.sms_opt_in=!!f.querySelector('#f-sms').checked;d.site_lang=document.documentElement.lang;
+var payload=new URLSearchParams();Object.keys(d).forEach(function(k){payload.append(k,d[k]);});payload.append('page',location.href);payload.append('referrer',document.referrer||'');
+if(window.SIGNUP_URL&&!d.website){try{fetch(window.SIGNUP_URL,{method:'POST',mode:'no-cors',body:payload,keepalive:true});}catch(err){}}
+if(d.website){return;}
+delete d.website;
 try{posthog.identify(d.email,{email:d.email,name:d.name,business:d.business,phone:d.phone,leads_per_month:d.leads_per_month,sms_opt_in:d.sms_opt_in,site_lang:d.site_lang});posthog.capture('waitlist_signup',d);}catch(err){}
 var b=f.querySelector('button[type=submit]');b.disabled=true;b.textContent=f.dataset.done;document.getElementById('waitlist-ok').style.display='block';});
 document.querySelectorAll('a[href="#audit"]').forEach(function(a){a.addEventListener('click',function(){try{posthog.capture('cta_click',{label:a.textContent.trim()});}catch(err){}});});
