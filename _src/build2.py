@@ -48,7 +48,6 @@ section{scroll-margin-top:70px;position:relative}
 .js .rv.d1{transition-delay:.08s}.js .rv.d2{transition-delay:.16s}.js .rv.d3{transition-delay:.24s}
 
 /* header */
-.refbar{background:var(--brand);color:#fff;text-align:center;font-weight:600;font-size:14.5px;line-height:1.45;padding:10px 18px}
 .hdr{position:sticky;top:0;z-index:40;background:rgba(13,17,23,.78);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid var(--ld)}
 .hdr .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:72px}
 .logo img{height:40px;width:auto}
@@ -194,6 +193,9 @@ section{scroll-margin-top:70px;position:relative}
 .log .who{font-size:11.5px;font-weight:600;color:#888;margin:4px 2px -4px}
 .log .who.b{align-self:flex-end;color:var(--brand-d)}
 .log .bub{font-size:14.5px;max-width:80%;padding:11px 15px}
+.rtag{align-self:flex-end;font-size:12px;font-weight:600;color:#1F7A4D;background:#E7F6EE;padding:4px 10px;border-radius:999px;margin-top:-2px}
+.ctrl{display:flex;align-items:center;gap:10px;font-family:var(--display);text-transform:uppercase;font-weight:600;font-size:20px;letter-spacing:.02em;color:#fff}
+.ctrl svg{flex:none}
 .empty{color:#8A9099;font-size:15px;text-align:center;margin:auto 0}
 .win-cta{padding:0 22px 22px}
 .win-cta .btn{width:100%}
@@ -590,7 +592,7 @@ def body(L):
     o.append(f'<section id="how" class="how"><div class="wrap"><h2 class="h2 rv">{L["how_h2"]}</h2><ol class="steps">{steps}</ol></div></section>')
     qs = ''.join(f'<button type="button" class="q" data-i="{i}" aria-pressed="false">{html.escape(q)}{svg(ARROW, 18, "#fff")}</button>' for i, (q, a) in enumerate(DEMO))
     o.append(f'''<section id="demo" class="demo dark"><div class="wrap">
-<div class="demo-l rv"><p class="eyebrow">{X['demo_eyebrow']}</p><h2 class="h2">{X['demo_h2']}</h2><p class="lead">{X['demo_p']}</p><div class="qs" role="group">{qs}</div><p class="demo-note">{X['demo_note']}</p></div>
+<div class="demo-l rv"><p class="eyebrow">{X['demo_eyebrow']}</p><h2 class="h2">{X['demo_h2']}</h2><p class="lead">{X['demo_p']}</p><p class="ctrl">{svg('<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>', 20, '#FFB27A')}{X['ctrl']}</p><div class="qs" role="group">{qs}</div><p class="demo-note">{X['demo_note']}</p></div>
 <div class="win rv d2"><div class="win-h"><i></i><i></i><i></i><span>{X['demo_bro']}</span></div><div class="log" id="log" aria-live="polite"><p class="empty">{X['demo_start']}</p></div><div class="win-cta"><a class="btn btn-brand" href="#audit">{X['demo_cta']} {svg(ARROW, 18, '#fff')}</a></div></div>
 </div></section>''')
     feats = ''.join(f'<div class="fi rv{" d" + str(i % 3) if i % 3 else ""}"><button type="button" class="fi-h" aria-expanded="false"><span class="ico">{svg(ICONS[i], 24)}</span><h3>{t}</h3><span class="chev">{chev}</span></button><p>{d}</p></div>' for i, (t, d) in enumerate(L['feat']))
@@ -619,7 +621,7 @@ def body(L):
     qas = ''.join(f'<details class="qa"{" open" if i == 0 else ""}><summary><h3>{q}</h3><span class="chev">{chev}</span></summary><p>{a}</p></details>' for i, (q, a) in enumerate(L['faq']))
     o.append(f'<section id="faq" class="faq"><div class="wrap"><h2 class="h2 rv">{L["faq_h2"]}</h2><div class="faq-l">{qas}</div></div></section>')
     al = ''.join(f'<li>{x}</li>' for x in L['audit_list'])
-    opts = ''.join(f'<option>{op}</option>' for op in L['f_opts'])
+    opts = f'<option value="" selected>{X["f_choose"]}</option>' + ''.join(f'<option>{op}</option>' for op in L['f_opts'])
     o.append(f'''<section id="audit" class="audit"><div class="wrap">
 <div class="audit-l rv"><h2>{L['audit_h2']}</h2><p>{L['audit_p']}</p><ul>{al}</ul></div>
 <form id="waitlist" class="rv d2" aria-label="{L['f_btn']}" data-done="{L['f_done']}">
@@ -640,28 +642,13 @@ def body(L):
 <p>{L['footer_legal']}</p>
 </div></footer>
 <div class="sticky" id="sticky" aria-hidden="true"><a class="btn btn-brand" href="#audit" tabindex="-1">{L['sticky']}</a></div>''')
-    demo_json = json.dumps({'a': [a for q, a in DEMO], 'q': [q for q, a in DEMO], 'you': X['demo_you'], 'bro': X['demo_bro']}, ensure_ascii=False)
+    demo_json = json.dumps({'a': [a for q, a in DEMO], 'q': [q for q, a in DEMO], 't': X['demo_tags'], 'you': X['demo_you'], 'bro': X['demo_bro']}, ensure_ascii=False)
     o.append(f'<script id="demo-data" type="application/json">{demo_json}</script>')
     return '\n'.join(o)
 
 JS = r"""<script>window.SIGNUP_URL='https://script.google.com/macros/s/AKfycbztYv8yAHyx6XuHL0YxAkPHzfOkV-wTxPOzFWAAKcNIBzgt4GQ1XJ9VNIGehiwFCas/exec';</script>
 <script>
 (function(){
-// referral: ?ref=<code> is remembered on this device, shown as a banner for known partners, and sent with the signup
-var PARTNERS={eduard:{n:'Eduard',b:'HandyGurus, Los Angeles'}};
-var RT={en:'{n} ({b}) invited you: your first month of ProsBros is free.',
-ru:'Вас пригласил {n} ({b}): первый месяц ProsBros для вас бесплатно.',
-es:'{n} ({b}) te invitó: tu primer mes de ProsBros es gratis.',
-uk:'Вас запросив {n} ({b}): перший місяць ProsBros для вас безкоштовно.'};
-var ref=null;
-try{var m=location.search.match(/[?&]ref=([a-z0-9_-]{2,32})/i);if(m){ref=m[1].toLowerCase();try{localStorage.setItem('pb_ref',ref);}catch(e){}}else{try{ref=localStorage.getItem('pb_ref');}catch(e){}}}catch(e){}
-window.PB_REF=ref;
-if(ref){
- try{posthog.register({ref:ref});}catch(e){}
- document.querySelectorAll('.lang a').forEach(function(a){try{var u=new URL(a.getAttribute('href'),location.href);u.searchParams.set('ref',ref);a.setAttribute('href',u.pathname+u.search);}catch(e){}});
- var P=PARTNERS[ref];
- if(P){var lg=(document.documentElement.lang||'en').slice(0,2),bn=document.createElement('div');bn.className='refbar';bn.setAttribute('role','note');bn.textContent=(RT[lg]||RT.en).replace('{n}',P.n).replace('{b}',P.b);document.body.insertBefore(bn,document.body.firstChild);}
-}
 var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 var mq=window.matchMedia('(max-width:760px)');
 // reveal on scroll
@@ -684,8 +671,9 @@ document.querySelectorAll('.q').forEach(function(btn){btn.addEventListener('clic
  log.innerHTML='';bubble('c',dd.q[i],dd.you);
  var ty=document.createElement('div');ty.className='bub typing b';ty.style.display='flex';ty.innerHTML='<i></i><i></i><i></i>';log.appendChild(ty);
  try{posthog.capture('demo_question',{i:i});}catch(e){}
- setTimeout(function(){ty.remove();var b=bubble('b','',dd.bro),s=dd.a[i],k=0;if(reduce){b.textContent=s;busy=false;return;}
-   var iv=setInterval(function(){k+=3;b.textContent=s.slice(0,k);if(k>=s.length){clearInterval(iv);busy=false;}},16);},reduce?0:1100);
+ setTimeout(function(){ty.remove();var b=bubble('b','',dd.bro),s=dd.a[i],k=0;if(reduce){b.textContent=s;var t=document.createElement('p');t.className='rtag';t.textContent='✓ '+dd.t[i];log.appendChild(t);busy=false;return;}
+   var tag=function(){var t=document.createElement('p');t.className='rtag';t.textContent='✓ '+dd.t[i];log.appendChild(t);};
+   var iv=setInterval(function(){k+=3;b.textContent=s.slice(0,k);if(k>=s.length){clearInterval(iv);tag();busy=false;}},16);},reduce?0:1100);
 });});
 // features: tap to expand on phones only
 document.querySelectorAll('.fi-h').forEach(function(b){b.addEventListener('click',function(){if(!mq.matches)return;var f=b.parentNode,o=f.classList.toggle('open');b.setAttribute('aria-expanded',o?'true':'false');});});
@@ -704,7 +692,7 @@ document.querySelectorAll('.lang a').forEach(function(a){a.addEventListener('cli
 // waitlist
 var f=document.getElementById('waitlist');
 f.addEventListener('submit',function(e){e.preventDefault();var d={};new FormData(f).forEach(function(v,k){d[k]=v;});d.sms_opt_in=!!f.querySelector('#f-sms').checked;d.site_lang=document.documentElement.lang;
-var payload=new URLSearchParams();Object.keys(d).forEach(function(k){payload.append(k,d[k]);});payload.append('page',location.href);payload.append('referrer',(ref?'ref:'+ref+(document.referrer?' | ':''):'')+(document.referrer||''));if(ref){d.ref=ref;}
+var payload=new URLSearchParams();Object.keys(d).forEach(function(k){payload.append(k,d[k]);});payload.append('page',location.href);payload.append('referrer',document.referrer||'');
 if(window.SIGNUP_URL&&!d.website){try{fetch(window.SIGNUP_URL,{method:'POST',mode:'no-cors',body:payload,keepalive:true});}catch(err){}}
 if(d.website){return;}
 delete d.website;
