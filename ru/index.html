@@ -126,6 +126,21 @@ posthog.init('phc_qAn2hvdsVW6jbmNr34Cai64jjH8Tg7cp7eCmxoNk42ak',{api_host:'https
 <script>window.SIGNUP_URL='https://script.google.com/macros/s/AKfycbztYv8yAHyx6XuHL0YxAkPHzfOkV-wTxPOzFWAAKcNIBzgt4GQ1XJ9VNIGehiwFCas/exec';</script>
 <script>
 (function(){
+// referral: ?ref=<code> is remembered on this device, shown as a banner for known partners, and sent with the signup
+var PARTNERS={eduard:{n:'Eduard',b:'HandyGurus, Los Angeles'}};
+var RT={en:'{n} ({b}) invited you: 14 days free + founding price $99/mo for life. First 20 pros only, until Dec 31.',
+ru:'Вас пригласил {n} ({b}): 14 дней бесплатно + цена основателя $99/мес навсегда. Только первые 20 мастеров, до 31 декабря.',
+es:'{n} ({b}) te invitó: 14 días gratis + precio de fundador $99/mes de por vida. Solo los primeros 20 pros, hasta el 31 de diciembre.',
+uk:'Вас запросив {n} ({b}): 14 днів безкоштовно + ціна засновника $99/міс назавжди. Лише перші 20 майстрів, до 31 грудня.'};
+var ref=null;
+try{var m=location.search.match(/[?&]ref=([a-z0-9_-]{2,32})/i);if(m){ref=m[1].toLowerCase();try{localStorage.setItem('pb_ref',ref);}catch(e){}}else{try{ref=localStorage.getItem('pb_ref');}catch(e){}}}catch(e){}
+window.PB_REF=ref;
+if(ref){
+ try{posthog.register({ref:ref});}catch(e){}
+ document.querySelectorAll('.lang a').forEach(function(a){try{var u=new URL(a.getAttribute('href'),location.href);u.searchParams.set('ref',ref);a.setAttribute('href',u.pathname+u.search);}catch(e){}});
+ var P=PARTNERS[ref];
+ if(P){var lg=(document.documentElement.lang||'en').slice(0,2),bn=document.createElement('div');bn.className='refbar';bn.setAttribute('role','note');bn.textContent=(RT[lg]||RT.en).replace('{n}',P.n).replace('{b}',P.b);document.body.insertBefore(bn,document.body.firstChild);}
+}
 var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 var mq=window.matchMedia('(max-width:760px)');
 // reveal on scroll
@@ -169,7 +184,7 @@ document.querySelectorAll('.lang a').forEach(function(a){a.addEventListener('cli
 // waitlist
 var f=document.getElementById('waitlist');
 f.addEventListener('submit',function(e){e.preventDefault();var d={};new FormData(f).forEach(function(v,k){d[k]=v;});d.sms_opt_in=!!f.querySelector('#f-sms').checked;d.site_lang=document.documentElement.lang;
-var payload=new URLSearchParams();Object.keys(d).forEach(function(k){payload.append(k,d[k]);});payload.append('page',location.href);payload.append('referrer',document.referrer||'');
+var payload=new URLSearchParams();Object.keys(d).forEach(function(k){payload.append(k,d[k]);});payload.append('page',location.href);payload.append('referrer',(ref?'ref:'+ref+(document.referrer?' | ':''):'')+(document.referrer||''));if(ref){d.ref=ref;}
 if(window.SIGNUP_URL&&!d.website){try{fetch(window.SIGNUP_URL,{method:'POST',mode:'no-cors',body:payload,keepalive:true});}catch(err){}}
 if(d.website){return;}
 delete d.website;
