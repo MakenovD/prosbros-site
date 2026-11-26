@@ -456,3 +456,9 @@ form button:disabled{opacity:.7;cursor:default}
   *,*::before,*::after{animation:none!important;transition:none!important}
   .js .rv{opacity:1;transform:none}
 }
+.bridge{font-family:var(--display);text-transform:uppercase;font-weight:600;font-size:22px;letter-spacing:.01em;color:#fff;padding-bottom:10px}
+.safe{font-size:14px;line-height:1.55;color:var(--td);margin:-4px 0 18px;max-width:560px}
+.safe b{color:#fff;font-weight:600}
+@media (min-width:761px){.steps{grid-template-columns:repeat(4,1fr)}.hero h1{font-size:clamp(40px,4.6vw,66px)}}
+@media (min-width:761px) and (max-width:1080px){.steps{grid-template-columns:repeat(2,1fr)}.steps::before{display:none}}
+@media (max-width:760px){.bridge{font-size:17px;padding-bottom:6px}.safe{font-size:13px}}
